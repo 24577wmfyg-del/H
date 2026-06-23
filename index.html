@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>飲食文化探索之旅－台灣美食守護者</title>
+
+<style>
+body{
+font-family:"Microsoft JhengHei",sans-serif;
+background:#f5f0e6;
+margin:0;
+padding:20px;
+}
+
+#game{
+max-width:1000px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:15px;
+box-shadow:0 0 15px rgba(0,0,0,.2);
+}
+
+h1{
+text-align:center;
+}
+
+#scene{
+width:100%;
+height:350px;
+object-fit:cover;
+border-radius:10px;
+}
+
+.stats{
+background:#fff3cd;
+padding:10px;
+border-radius:10px;
+margin:15px 0;
+}
+
+button{
+padding:10px 15px;
+margin:5px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+background:#ffb84d;
+font-size:16px;
+}
+
+button:hover{
+background:#ffa726;
+}
+
+#story{
+line-height:1.8;
+margin-top:15px;
+}
+
+ul{
+text-align:left;
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+<h1>飲食文化探索之旅－台灣美食守護者</h1>
+
+<img id="scene" src="images/cover.jpg">
+
+<div class="stats">
+第 <span id="day">1</span> 天 |
+體力：<span id="energy">10</span> |
+金錢：<span id="money">150</span> |
+知識值：<span id="knowledge">0</span>
+</div>
+
+<div id="story"></div>
+
+<div id="choices"></div>
+
+</div>
+
+<script>
+
+let day=1;
+let energy=10;
+let money=150;
+let knowledge=0;
+
+let bag=[];
+let achievements=[];
+
+function updateStats(){
+document.getElementById("day").textContent=day;
+document.getElementById("energy").textContent=energy;
+document.getElementById("money").textContent=money;
+document.getElementById("knowledge").textContent=knowledge;
+}
+
+function show(text,buttons){
+
+document.getElementById("story").innerHTML=text;
+
+const area=document.getElementById("choices");
+area.innerHTML="";
+
+buttons.forEach(btn=>{
+
+let b=document.createElement("button");
+
+b.textContent=btn.text;
+
+b.onclick=btn.action;
+
+area.appendChild(b);
+
+});
+
+updateStats();
+}
+
+function start(){
+
+show(`
+<h2>故事開始</h2>
+
+你是阿源。
+
+暑假回到台南老家。
+
+阿嬤正在準備一年一度的飲食文化祭。
+
+她希望你能在七天內學習台灣各地飲食文化，
+並蒐集文化資料協助文化祭展覽。
+
+七天後，
+文化祭的成敗將取決於你的努力。
+`,
+[
+{text:"開始冒險",action:map}
+]);
+
+}
+
+function map(){
+
+show(`
+<h2>探索地圖</h2>
+
+請選擇今天要前往的地點。
+`,
+[
+{text:"傳統市場",action:market},
+{text:"廟口夜市",action:nightMarket},
+{text:"海鮮港口",action:port},
+{text:"客家庄",action:hakka},
+{text:"原住民部落",action:tribe},
+{text:"茶園",action:tea},
+{text:"查看背包",action:inventory},
+{text:"查看成就",action:viewAchievement},
+{text:"回家休息",action:sleep}
+]);
+
+}
+
+function market(){
+
+if(energy<2){alert("體力不足");return;}
+
+energy-=2;
+
+let ans=prompt("台灣家庭常見葉菜類？\nA.地瓜葉\nB.藍莓\nC.酪梨");
+
+if(ans=="A"||ans=="a"){
+knowledge+=10;
+bag.push("地瓜葉");
+alert("答對！知識+10");
+}
+
+document.getElementById("scene").src="images/market.jpg";
+
+show(`
+<h2>傳統市場</h2>
+
+你認識了地瓜葉與家常菜文化。
+`,
+[
+{text:"返回地圖",action:map}
+]);
+
+}
+
+function nightMarket(){
+
+if(energy<2){alert("體力不足");return;}
+
+energy-=2;
+
+let ans=prompt("臭豆腐特色來自？\nA.發酵\nB.冷凍\nC.曬乾");
+
+if(ans=="A"||ans=="a"){
+knowledge+=10;
+}
+
+if(!achievements.includes("夜市達人")){
+achievements.push("夜市達人");
+}
+
+document.getElementById("scene").src="images/nightmarket.jpg";
+
+show(`
+<h2>廟口夜市</h2>
+
+你學習了臭豆腐與珍珠奶茶文化。
+`,
+[
+{text:"返回地圖",action:map}
+]);
+
+}
+
+function port(){
+
+if(energy<3){alert("體力不足");return;}
+
+energy-=3;
+
+knowledge+=15;
+
+bag.push("虱目魚");
+
+document.getElementById("scene").src="images/port.jpg";
+
+show(`
+<h2>海鮮港口</h2>
+
+漁夫向你介紹虱目魚與蚵仔文化。
+
+知識值+15
+`,
+[
+{text:"返回地圖",action:map}
+]);
+
+}
+
+function hakka(){
+
+if(energy<2){alert("體力不足");return;}
+
+energy-=2;
+
+knowledge+=15;
+
+bag.push("客家粄條");
+
+document.getElementById("scene").src="images/hakka.jpg";
+
+show(`
+<h2>客家庄</h2>
+
+客家阿伯說：
+
+「珍惜食物，是客家文化的重要精神。」
+
+知識值+15
+`,
+[
+{text:"返回地圖",action:map}
+]);
+
+}
+
+function tribe(){
+
+if(energy<2){alert("體力不足");return;}
+
+energy-=2;
+
+knowledge+=15;
+
+bag.push("小米");
+
+document.getElementById("scene").src="images/tribe.jpg";
+
+show(`
+<h2>原住民部落</h2>
+
+你認識了小米、竹筒飯與馬告。
+
+知識值+15
+`,
+[
+{text:"返回地圖",action:map}
+]);
+
+}
+
+function tea(){
+
+if(energy<2){alert("體力不足");return;}
+
+energy-=2;
+
+knowledge+=15;
+
+bag.push("茶葉");
+
+document.getElementById("scene").src="images/tea.jpg";
+
+show(`
+<h2>茶園</h2>
+
+你了解高山茶與東方美人茶。
+
+知識值+15
+`,
+[
+{text:"返回地圖",action:map}
+]);
+
+}
+
+function inventory(){
+
+show(`
+<h2>背包</h2>
+
+<ul>
+${bag.map(i=>"<li>"+i+"</li>").join("")}
+</ul>
+`,
+[
+{text:"返回",action:map}
+]);
+
+}
+
+function viewAchievement(){
+
+show(`
+<h2>成就</h2>
+
+<ul>
+${achievements.map(i=>"<li>"+i+"</li>").join("")}
+</ul>
+`,
+[
+{text:"返回",action:map}
+]);
+
+}
+
+function sleep(){
+
+day++;
+
+energy=10;
+
+if(day>7){
+
+festival();
+
+return;
+}
+
+show(`
+<h2>今天結束</h2>
+
+阿嬤幫你整理今天學到的文化知識。
+
+明天繼續努力。
+`,
+[
+{text:"進入下一天",action:map}
+]);
+
+}
+
+function festival(){
+
+let score=knowledge;
+
+if(bag.includes("虱目魚")) score+=10;
+if(bag.includes("小米")) score+=10;
+if(bag.includes("茶葉")) score+=10;
+
+knowledge=score;
+
+ending();
+
+}
+
+function ending(){
+
+let text="";
+
+if(knowledge>=120){
+
+text=`
+<h2>🏆 真結局</h2>
+
+你成功完成文化祭。
+
+並成為台灣飲食文化推廣大使！
+
+總知識值：${knowledge}
+`;
+
+}else if(knowledge>=80){
+
+text=`
+<h2>😊 好結局</h2>
+
+文化祭順利完成。
+
+許多人因此認識台灣飲食文化。
+
+總知識值：${knowledge}
+`;
+
+}else{
+
+text=`
+<h2>😢 普通結局</h2>
+
+準備不足。
+
+明年再加油。
+
+總知識值：${knowledge}
+`;
+
+}
+
+show(text,
+[
+{text:"重新開始",action:()=>location.reload()}
+]);
+
+}
+
+start();
+
+</script>
+
+</body>
+</html>
